@@ -49,17 +49,17 @@ function updateBarChart(sampleData) {
     
 }
 // Dropdown Selection
-function optionChanged(selectedSampleID) {
-    // Data for Sample Selection
-    d3.json(dataURL).then(data => {
-        const samples = data.samples;
-        const selectedSample = samples.find(sample => sample.id === selectedSampleID)
-        // Update bar chart
-        updateBarChart(selectedSample);
-    });
-}
+// function optionChanged(selectedSampleID) {
+//     // Data for Sample Selection
+//     d3.json(dataURL).then(data => {
+//         const samples = data.samples;
+//         const selectedSample = samples.find(sample => sample.id === selectedSampleID)
+//         // Update bar chart
+//         updateBarChart(selectedSample);
+//     });
+// }
 
-init();
+// init();
 
 function updateBubbleChart(sampleData) {
 
@@ -87,26 +87,86 @@ function updateBubbleChart(sampleData) {
     Plotly.newPlot('bubble', [trace], layout);
 }
 
-function optionChanged(selectedSampleID) {
+// function optionChanged(selectedSampleID) {
 
-    d3.json(dataURL).then(data => {
-        const samples = data.samples;
-        const selectedSample = samples.find(sample => sample.id === selectedSampleID)
+//     d3.json(dataURL).then(data => {
+//         const samples = data.samples;
+//         const selectedSample = samples.find(sample => sample.id === selectedSampleID)
 
-        updateBubbleChart(selectedSample)
-    });
-}
+//         updateBubbleChart(selectedSample)
+//     });
+// }
 
-function initBubbleChart() {
+// function initBubbleChart() {
 
-    d3.json(dataURL).then(data => {
-        const samples = data.samples;
+//     d3.json(dataURL).then(data => {
+//         const samples = data.samples;
 
-        const defaultSample = samples[0];
+//         const defaultSample = samples[0];
 
-        updateBubbleChart(defaultSample);
+//         updateBubbleChart(defaultSample);
     
+//     });
+// }
+
+// initBubbleChart();
+
+function updateDemographicInfo(metadata) {
+    const metadataDiv = document.getElementById("sample-metadata");
+
+    metadataDiv.innerHTML = "";
+
+    for (const [key, value] of Object.entries(metadata)) {
+        const paragraph = document.createElement("p");
+        paragraph.textContent = `${key}: ${value}` ;
+        metadataDiv.appendChild(paragraph);
+    }
+}
+
+// function optionChanged(selectedSampleID) {
+//     d3.json(dataURL).then(data => {
+//         const metadata = data.metadata.find(item => item.id === parseInt(selectedSampleID));
+//         updateDemographicInfo(metadata);
+//     });
+// }
+
+// initDemographicinto()
+
+function optionChanged(selectedSampleID) {
+    d3.json(dataURL).then(data => {
+      const samples = data.samples;
+      const metadata = data.metadata;
+  
+      // Find the selected sample data and metadata
+      const selectedSample = samples.find(sample => sample.id === selectedSampleID);
+      const selectedMetadata = metadata.find(item => item.id === parseInt(selectedSampleID));
+      
+
+      updateDemographicInfo(selectedMetadata);
+      updateBarChart(selectedSample);
+      updateBubbleChart(selectedSample);
+    });
+
+}
+
+function init() {
+    d3.json(dataURL).then(data => {
+        const samples = data.samples;
+        const metadata = data.metadata;
+
+        const select = document.getElementById("selDataset");
+        samples.forEach(sample => {
+            const option = document.createElement("option");
+            option.value = sample.id;
+            option.text = sample.id;
+            select.appendChild(option);
+    });
+
+        const defaultSampleID = samples[0].id;
+        optionChanged(defaultSampleID);
     });
 }
 
-initBubbleChart();
+init();
+
+
